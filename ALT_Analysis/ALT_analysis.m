@@ -24,7 +24,7 @@ end
 
 
 
-function [rt, rate, sem] = ALT_trial_breakdown(trialseq,id)
+function [rt, rate] = ALT_trial_breakdown(trialseq,id)
 
     % NOGO SUB TABLES
     nogo.odd_visual = trialseq(trialseq(:,id.nov_v) == 1 & trialseq(:,id.nogo) == 1,:);
@@ -79,6 +79,5 @@ function [rt, rate, sem] = ALT_trial_breakdown(trialseq,id)
     rt.odd_a = nanmean(odd_audio_correct(:,id.rt));
     rt.odd_h = nanmean(odd_haptic_correct(:,id.rt));
     rt.stan = nanmean(standard_correct(:,id.rt));
-    rt.all = nanmean(trialseq(:,id.rt));
     
 end

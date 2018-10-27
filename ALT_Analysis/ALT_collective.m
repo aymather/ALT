@@ -3,7 +3,8 @@
 clear;clc
 
 disp('Welcome to the analysis!');
-input = input('Would you like to print graphs?: ');
+response_1 = input('Would you like to print blockwise graphs?: ');
+response_2 = input('Would you like to print overall graphs?: ');
 
 % COLUMNS
 id = ALT_columns;
@@ -143,32 +144,6 @@ for is = 1:length(filenames)
        
    end
    
-   % Give each blockwise a subject number
-   RESULTS.BLOCKWISE.RT.odd_v(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RT.odd_a(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RT.odd_h(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RT.stan(is, blocks + 1) = data.nr;
-   
-   RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_v(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_a(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_h(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.SUCCSTOP.stan(is, blocks + 1) = data.nr;
-   
-   RESULTS.BLOCKWISE.RATE.MISS.odd_v(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.MISS.odd_a(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.MISS.odd_h(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.MISS.stan(is, blocks + 1) = data.nr;
-   
-   RESULTS.BLOCKWISE.RATE.ERROR.odd_v(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.ERROR.odd_a(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.ERROR.odd_h(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.ERROR.stan(is, blocks + 1) = data.nr;
-   
-   RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_v(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_a(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_h(is, blocks + 1) = data.nr;
-   RESULTS.BLOCKWISE.RATE.FAILSTOP.stan(is, blocks + 1) = data.nr;
-   
 end
 
 % Find and place MEAN/SEM -- mean == length(filenames+1) // sem == length(filenames+2)
@@ -247,147 +222,174 @@ for ii = 2:size(RESULTS.OVERALL,2)
     RESULTS.OVERALL(length(filenames)+2, ii) = std(RESULTS.OVERALL(1:length(filenames),ii)) / sqrt(length(filenames));   
 end
 
-% if response == 1
-%     
-%     % GET VALUES
-%     values = [RESULTS.BLOCKWISE.RT.odd_v(length(filenames) + 1,1:8); RESULTS.BLOCKWISE.RT.odd_a(length(filenames) + 1,1:8); RESULTS.BLOCKWISE.RT.odd_h(length(filenames) + 1,1:8); RESULTS.BLOCKWISE.RT.stan(length(filenames) + 1,1:8);]';
-%     errors = [RESULTS.BLOCKWISE.RT.odd_v(length(filenames) + 2,1:8); RESULTS.BLOCKWISE.RT.odd_a(length(filenames) + 2,1:8); RESULTS.BLOCKWISE.RT.odd_h(length(filenames) + 2,1:8); RESULTS.BLOCKWISE.RT.stan(length(filenames) + 2,1:8);]';
-% 
-%     % MAKE GRAPHS
-%     graph = figure('Position',[1 1 1200 400],'PaperPositionMode','auto','Visible','on');
-%     graph = bar(values);
-%     hold on
-%     X = [];
-%     for i = 1:length(graph)
-%         X = [X; graph(i).XData + graph(i).XOffset];
-%     end
-%     X = X';
-%     EB = errorbar(X,values,errors,'.');
-%     legend('Visual', 'Auditory', 'Haptic', 'Standard');
-%     xlabel('Block');
-%     ylabel('% of Successful Stops');
-%     ylim([0 400]);
-%     hold off
-% 
-% end
-
 % -- MAKE DATA GRAPHS -- %
-if input == 1
+if response_1 == 1
+    
     % preassign
-    rt.stan_values = []; rt.visual_values = []; rt.auditory_values = []; rt.haptic_values = [];
-    rt.stan_errors = []; rt.visual_errors = []; rt.auditory_errors = []; rt.haptic_errors = [];
+    rt_values = []; rt_errors = [];
+    miss_values = []; miss_errors = [];
+    errors_values = []; errors_errors = [];
+    succstop_values = []; succstop_errors = [];
+    failstop_values = []; failstop_errors = [];
 
-    rate.error.stan_values = []; rate.error.visual_values = []; rate.error.auditory_values = []; rate.error.haptic_values = [];
-    rate.error.stan_errors = []; rate.error.visual_errors = []; rate.error.auditory_errors = []; rate.error.haptic_errors = [];
+    for ib = 1:blocks
 
-    rate.failstop.stan_values = []; rate.failstop.visual_values = []; rate.failstop.auditory_values = []; rate.failstop.haptic_values = [];
-    rate.failstop.stan_errors = []; rate.failstop.visual_errors = []; rate.failstop.auditory_errors = []; rate.failstop.haptic_errors = [];
-
-    rate.succstop.stan_values = []; rate.succstop.visual_values = []; rate.succstop.auditory_values = []; rate.succstop.haptic_values = [];
-    rate.succstop.stan_errors = []; rate.succstop.visual_errors = []; rate.succstop.auditory_errors = []; rate.succstop.haptic_errors = [];
-
-    rate.miss.stan_values = []; rate.miss.visual_values = []; rate.miss.auditory_values = []; rate.miss.haptic_values = [];
-    rate.miss.stan_errors = []; rate.miss.visual_errors = []; rate.miss.auditory_errors = []; rate.miss.haptic_errors = [];
-
-    for it = 1:2:8
-
-        % RT Values
-        a = nanmean((RESULTS.BLOCKWISE.RT.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RT.stan(1:length(filenames),it+1))/2);
-        rt.stan_values = [rt.stan_values,a];
-        aa = nanstd((RESULTS.BLOCKWISE.RT.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RT.stan(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rt.stan_errors = [rt.stan_errors, aa];
-        b = nanmean((RESULTS.BLOCKWISE.RT.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RT.odd_v(1:length(filenames),it+1))/2);
-        rt.visual_values = [rt.visual_values,b];
-        bb = nanstd((RESULTS.BLOCKWISE.RT.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RT.odd_v(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rt.visual_errors = [rt.visual_errors, bb];
-        c = nanmean((RESULTS.BLOCKWISE.RT.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RT.odd_a(1:length(filenames),it+1))/2);
-        rt.auditory_values = [rt.auditory_values,c];
-        cc = nanstd((RESULTS.BLOCKWISE.RT.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RT.odd_a(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rt.auditory_errors = [rt.auditory_errors, cc];
-        d = nanmean((RESULTS.BLOCKWISE.RT.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RT.odd_h(1:length(filenames),it+1))/2);
-        rt.haptic_values = [rt.haptic_values,d];
-        dd = nanstd((RESULTS.BLOCKWISE.RT.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RT.odd_h(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rt.haptic_errors = [rt.haptic_errors, dd];
-
-        % ERROR Values
-        e = mean((RESULTS.BLOCKWISE.RATE.ERROR.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.ERROR.stan(1:length(filenames),it+1))/2);
-        rate.error.stan_values = [rate.error.stan_values, e];
-        ee = nanstd((RESULTS.BLOCKWISE.RATE.ERROR.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.ERROR.stan(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.error.stan_errors = [rate.error.stan_errors, ee];
-        f = mean((RESULTS.BLOCKWISE.RATE.ERROR.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.ERROR.odd_v(1:length(filenames),it+1))/2);
-        rate.error.visual_values = [rate.error.visual_values, f];
-        ff = nanstd((RESULTS.BLOCKWISE.RATE.ERROR.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.ERROR.odd_v(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.error.visual_errors = [rate.error.visual_errors, ff];
-        g = mean((RESULTS.BLOCKWISE.RATE.ERROR.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.ERROR.odd_a(1:length(filenames),it+1))/2);
-        rate.error.auditory_values = [rate.error.auditory_values, g];
-        gg = nanstd((RESULTS.BLOCKWISE.RATE.ERROR.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.ERROR.odd_a(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.error.auditory_errors = [rate.error.auditory_errors, gg];
-        h = mean((RESULTS.BLOCKWISE.RATE.ERROR.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.ERROR.odd_h(1:length(filenames),it+1))/2);
-        rate.error.haptic_values = [rate.error.haptic_values, h];
-        hh = nanstd((RESULTS.BLOCKWISE.RATE.ERROR.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.ERROR.odd_h(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.error.haptic_errors = [rate.error.haptic_errors, hh];
-
-        % FAILSTOP Values
-        i = mean((RESULTS.BLOCKWISE.RATE.FAILSTOP.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.FAILSTOP.stan(1:length(filenames),it+1))/2);
-        rate.failstop.stan_values = [rate.failstop.stan_values, i];
-        ii = nanstd((RESULTS.BLOCKWISE.RATE.FAILSTOP.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.FAILSTOP.stan(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.failstop.stan_errors = [rate.failstop.stan_errors, ii];
-        j = mean((RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_v(1:length(filenames),it+1))/2);
-        rate.failstop.visual_values = [rate.failstop.visual_values, j];
-        jj = nanstd((RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_v(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.failstop.visual_errors = [rate.failstop.visual_errors, jj];
-        k = mean((RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_a(1:length(filenames),it+1))/2);
-        rate.failstop.auditory_values = [rate.failstop.auditory_values, k];
-        kk = nanstd((RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_a(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.failstop.auditory_errors = [rate.failstop.auditory_errors, kk];
-        l = mean((RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_h(1:length(filenames),it+1))/2);
-        rate.failstop.haptic_values = [rate.failstop.haptic_values, l];
-        ll = nanstd((RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_h(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.failstop.haptic_errors = [rate.failstop.haptic_errors, ll];
-
-        % SUCCSTOP Values
-        m = mean((RESULTS.BLOCKWISE.RATE.SUCCSTOP.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.SUCCSTOP.stan(1:length(filenames),it+1))/2);
-        rate.succstop.stan_values = [rate.succstop.stan_values, m];
-        mm = nanstd((RESULTS.BLOCKWISE.RATE.SUCCSTOP.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.SUCCSTOP.stan(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.succstop.stan_errors = [rate.succstop.stan_errors, mm];
-        n = mean((RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_v(1:length(filenames),it+1))/2);
-        rate.succstop.visual_values = [rate.succstop.visual_values, n];
-        nn = nanstd((RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_v(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.succstop.visual_errors = [rate.succstop.visual_errors, nn];
-        o = mean((RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_a(1:length(filenames),it+1))/2);
-        rate.succstop.auditory_values = [rate.succstop.auditory_values, o];
-        oo = nanstd((RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_a(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.succstop.auditory_errors = [rate.succstop.auditory_errors, oo];
-        p = mean((RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_h(1:length(filenames),it+1))/2);
-        rate.succstop.haptic_values = [rate.succstop.haptic_values, p];
-        pp = nanstd((RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_h(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.succstop.haptic_errors = [rate.succstop.haptic_errors, pp];
-
-        % MISS Values
-        q = mean((RESULTS.BLOCKWISE.RATE.MISS.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.MISS.stan(1:length(filenames),it+1))/2);
-        rate.miss.stan_values = [rate.miss.stan_values, q];
-        qq = nanstd((RESULTS.BLOCKWISE.RATE.MISS.stan(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.MISS.stan(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.miss.stan_errors = [rate.miss.stan_errors, qq];
-        r = mean((RESULTS.BLOCKWISE.RATE.MISS.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.MISS.odd_v(1:length(filenames),it+1))/2);
-        rate.miss.visual_values = [rate.miss.visual_values, r];
-        rr = nanstd((RESULTS.BLOCKWISE.RATE.MISS.odd_v(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.MISS.odd_v(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.miss.visual_errors = [rate.miss.visual_errors, rr];
-        s = mean((RESULTS.BLOCKWISE.RATE.MISS.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.MISS.odd_a(1:length(filenames),it+1))/2);
-        rate.miss.auditory_values = [rate.miss.auditory_values, s];
-        ss = nanstd((RESULTS.BLOCKWISE.RATE.MISS.odd_a(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.MISS.odd_a(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.miss.auditory_errors = [rate.miss.auditory_errors, ss];
-        t = mean((RESULTS.BLOCKWISE.RATE.MISS.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.MISS.odd_h(1:length(filenames),it+1))/2);
-        rate.miss.haptic_values = [rate.miss.haptic_values, t];
-        tt = nanstd((RESULTS.BLOCKWISE.RATE.MISS.odd_h(1:length(filenames),it) + RESULTS.BLOCKWISE.RATE.MISS.odd_h(1:length(filenames),it+1))/2) / sqrt(length(filenames));
-        rate.miss.haptic_errors = [rate.miss.haptic_errors, tt];
+        rt_values = [rt_values; RESULTS.BLOCKWISE.RT.stan(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RT.odd_v(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RT.odd_a(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RT.odd_h(length(filenames)+1,ib)];
+        
+        rt_errors = [rt_errors; RESULTS.BLOCKWISE.RT.stan(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RT.odd_v(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RT.odd_a(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RT.odd_h(length(filenames)+2,ib)];
+        
+        miss_values = [miss_values; RESULTS.BLOCKWISE.RATE.MISS.stan(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.MISS.odd_v(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.MISS.odd_a(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.MISS.odd_h(length(filenames)+1,ib)];
+        
+        miss_errors = [miss_errors; RESULTS.BLOCKWISE.RATE.MISS.stan(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.MISS.odd_v(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.MISS.odd_a(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.MISS.odd_h(length(filenames)+2,ib)];
+        
+        succstop_values = [succstop_values; RESULTS.BLOCKWISE.RATE.SUCCSTOP.stan(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_v(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_a(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_h(length(filenames)+1,ib)];
+        
+        succstop_errors = [succstop_errors; RESULTS.BLOCKWISE.RATE.SUCCSTOP.stan(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_v(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_a(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_h(length(filenames)+2,ib)];
+        
+        failstop_values = [failstop_values; RESULTS.BLOCKWISE.RATE.FAILSTOP.stan(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_v(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_a(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_h(length(filenames)+1,ib)];
+        
+        failstop_errors = [failstop_errors; RESULTS.BLOCKWISE.RATE.FAILSTOP.stan(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_v(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_a(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.FAILSTOP.odd_h(length(filenames)+2,ib)];
+        
+        errors_values = [errors_values; RESULTS.BLOCKWISE.RATE.ERROR.stan(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.ERROR.odd_v(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.ERROR.odd_a(length(filenames)+1,ib), ...
+            RESULTS.BLOCKWISE.RATE.ERROR.odd_h(length(filenames)+1,ib)];
+        
+        errors_errors = [errors_errors; RESULTS.BLOCKWISE.RATE.ERROR.stan(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.ERROR.odd_v(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.ERROR.odd_a(length(filenames)+2,ib), ...
+            RESULTS.BLOCKWISE.RATE.ERROR.odd_h(length(filenames)+2,ib)];
 
     end
+    
+    % -- GRAPH STYLE SHEET -- %
+    leg = {'Standard', 'Visual', 'Auditory', 'Haptic'};
+    xlab = 'Block';
+    ylab = 'RT (ms)';
+    
+    title_ = 'RT';
+    lim = 350;
+    graph_it(title_, leg, lim, xlab, ylab, rt_values, rt_errors);
+    
+    title_ = 'Errors';
+    ylab = '%';
+    lim = 8;
+    graph_it(title_, leg, lim, xlab, ylab, errors_values, errors_errors);
+    
+    title_ = 'Succstop';
+    lim = 100;
+    graph_it(title_, leg, lim, xlab, ylab, succstop_values, succstop_errors);
+    
+    title_ = 'Miss';
+    lim = 50;
+    graph_it(title_, leg, lim, xlab, ylab, miss_values, miss_errors);
 
-    graph_it(rt.stan_values, rt.visual_values, rt.auditory_values, rt.haptic_values, rt.stan_errors, rt.visual_errors, rt.auditory_errors, rt.haptic_errors, 400);
-    graph_it(rate.error.stan_values, rate.error.visual_values, rate.error.auditory_values, rate.error.haptic_values, rate.error.stan_errors, rate.error.visual_errors, rate.error.auditory_errors, rate.error.haptic_errors, 6);
-    graph_it(rate.failstop.stan_values, rate.failstop.visual_values, rate.failstop.auditory_values, rate.failstop.haptic_values, rate.failstop.stan_errors, rate.failstop.visual_errors, rate.failstop.auditory_errors, rate.failstop.haptic_errors, 75);
-    graph_it(rate.succstop.stan_values, rate.succstop.visual_values, rate.succstop.auditory_values, rate.succstop.haptic_values, rate.succstop.stan_errors, rate.succstop.visual_errors, rate.succstop.auditory_errors, rate.succstop.haptic_errors, 100);
-    graph_it(rate.miss.stan_values, rate.miss.visual_values, rate.miss.auditory_values, rate.miss.haptic_values, rate.miss.stan_errors, rate.miss.visual_errors, rate.miss.auditory_errors, rate.miss.haptic_errors, 40); 
+end
+
+if response_2 == 1
+    
+    % RT
+    rt_values = [RESULTS.OVERALL(length(filenames)+1,2), ...
+        RESULTS.OVERALL(length(filenames)+1,3), ...
+        RESULTS.OVERALL(length(filenames)+1,4), ...
+        RESULTS.OVERALL(length(filenames)+1,5),];
+    
+    rt_errors = [RESULTS.OVERALL(length(filenames)+2,2), ...
+        RESULTS.OVERALL(length(filenames)+2,3), ...
+        RESULTS.OVERALL(length(filenames)+2,4), ...
+        RESULTS.OVERALL(length(filenames)+2,5),];
+    
+    % Errors
+    errors_values = [RESULTS.OVERALL(length(filenames)+1,6), ...
+        RESULTS.OVERALL(length(filenames)+1,7), ...
+        RESULTS.OVERALL(length(filenames)+1,8), ...
+        RESULTS.OVERALL(length(filenames)+1,9),];
+    
+    errors_errors = [RESULTS.OVERALL(length(filenames)+2,6), ...
+        RESULTS.OVERALL(length(filenames)+2,7), ...
+        RESULTS.OVERALL(length(filenames)+2,8), ...
+        RESULTS.OVERALL(length(filenames)+2,9),];
+    
+    % Miss
+    miss_values = [RESULTS.OVERALL(length(filenames)+1,10), ...
+        RESULTS.OVERALL(length(filenames)+1,11), ...
+        RESULTS.OVERALL(length(filenames)+1,12), ...
+        RESULTS.OVERALL(length(filenames)+1,13),];
+    
+    miss_errors = [RESULTS.OVERALL(length(filenames)+2,10), ...
+        RESULTS.OVERALL(length(filenames)+2,11), ...
+        RESULTS.OVERALL(length(filenames)+2,12), ...
+        RESULTS.OVERALL(length(filenames)+2,13),];
+    
+    % Failstop
+    failstop_values = [RESULTS.OVERALL(length(filenames)+1,14), ...
+        RESULTS.OVERALL(length(filenames)+1,15), ...
+        RESULTS.OVERALL(length(filenames)+1,16), ...
+        RESULTS.OVERALL(length(filenames)+1,17),];
+    
+    failstop_errors = [RESULTS.OVERALL(length(filenames)+2,14), ...
+        RESULTS.OVERALL(length(filenames)+2,15), ...
+        RESULTS.OVERALL(length(filenames)+2,16), ...
+        RESULTS.OVERALL(length(filenames)+2,17),];
+    
+    % Succstop
+    succstop_values = [RESULTS.OVERALL(length(filenames)+1,22), ...
+        RESULTS.OVERALL(length(filenames)+1,23), ...
+        RESULTS.OVERALL(length(filenames)+1,24), ...
+        RESULTS.OVERALL(length(filenames)+1,25),];
+    
+    succstop_errors = [RESULTS.OVERALL(length(filenames)+2,22), ...
+        RESULTS.OVERALL(length(filenames)+2,23), ...
+        RESULTS.OVERALL(length(filenames)+2,24), ...
+        RESULTS.OVERALL(length(filenames)+2,25),];
+    
+    
+    % -- GRAPH STYLE SHEET -- %
+    leg = {'Standard', 'Visual', 'Auditory', 'Haptic'};
+    ylab = 'RT (ms)';
+    xlab = '';
+    
+    title_ = 'RT';
+    lim = 350;
+    graph_it(title_, leg, lim, xlab, ylab, rt_values, rt_errors);
+    
+    title_ = 'Errors';
+    ylab = '%';
+    lim = 8;
+    graph_it(title_, leg, lim, xlab, ylab, errors_values, errors_errors);
+    
+    title_ = 'Succstop';
+    lim = 100;
+    graph_it(title_, leg, lim, xlab, ylab, succstop_values, succstop_errors);
+    
+    title_ = 'Miss';
+    lim = 50;
+    graph_it(title_, leg, lim, xlab, ylab, miss_values, miss_errors);
+    
 end
 % clearvars -except RESULTS outfolder outfile
 

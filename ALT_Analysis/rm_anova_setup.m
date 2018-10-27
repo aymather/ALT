@@ -113,7 +113,7 @@ data_miss(length(filenames)*3+1:end,2) = 4; %haptic
 
 % -- rm_anova2 setup -- %
 
-%data
+%data (RT)
 Y = [];
 for it = 1:8
     Y = [Y; RESULTS.BLOCKWISE.RT.stan(1:length(filenames),it)]; 
@@ -127,6 +127,54 @@ end
 for it = 1:8
     Y = [Y; RESULTS.BLOCKWISE.RT.odd_h(1:length(filenames),it)];
 end
+
+% % ANOVA Error rates
+% Y = [];
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.ERROR.stan(1:length(filenames),it)]; 
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.ERROR.odd_v(1:length(filenames),it)];
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.ERROR.odd_a(1:length(filenames),it)];
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.ERROR.odd_h(1:length(filenames),it)];
+% end
+
+
+% % ANOVA MISS RATES
+% Y = [];
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.MISS.stan(1:length(filenames),it)]; 
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.MISS.odd_v(1:length(filenames),it)];
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.MISS.odd_a(1:length(filenames),it)];
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.MISS.odd_h(1:length(filenames),it)];
+% end
+% 
+
+% % ANOVA SUCCSTOP
+% Y = [];
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.SUCCSTOP.stan(1:length(filenames),it)]; 
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_v(1:length(filenames),it)];
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_a(1:length(filenames),it)];
+% end
+% for it = 1:8
+%     Y = [Y; RESULTS.BLOCKWISE.RATE.SUCCSTOP.odd_h(1:length(filenames),it)];
+% end
+
 
 %subject number
 S = [];
